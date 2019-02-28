@@ -8,29 +8,33 @@
 #include <mutex>
 #include <memory>
 #include <limits>
-#include<boost/python.hpp>
-#include<boost/python/numpy.hpp>
+#include <site-packages/numpy/core/include/numpy/arrayobject.h>
 #include "seal/seal.h"
-//#ifdef _DEBUG
-//#undef _DEBUG
-//#include <python.h>
-//#define _DEBUG
-//#else
-//#include <python.h>
-//#endif
+
+#ifdef _DEBUG
+#undef _DEBUG
+#include <python.h>
+#define _DEBUG
+#else
+#include <python.h>
+#endif
+
 using namespace std;
 using namespace seal;
+int init_numpy() {//初始化 numpy 执行环境，主要是导入包，python2.7用void返回类型，python3.0以上用int返回类型
+
+	import_array();
+}
 void main() {
 	char msg[256] = "11111 ";
 
 	PyObject * pModule = NULL;
 	PyObject * pFunc = NULL;
 	PyObject * pArg = NULL;
-	PyObject * run_learning = NULL;
 
 	// 初始化python环境
 	Py_Initialize();
-	//PyRun_SimpleString("import sys"); //PyRun_SimpleString("import tensorflow as tf");
+	init_numpy();//初始化numpy环境
 	// 导入python脚本
 	pModule = PyImport_ImportModule("federated_mnistcnn");
 
@@ -43,7 +47,27 @@ void main() {
 	if (pModule != NULL) {
 		PyEval_CallObject(pFunc, pArg);
 	}*/
-	run_learning=PyEval_CallObject(pFunc,NULL);
+	PyObject * run_learning=PyEval_CallObject(pFunc,NULL);
+	if (PyList_Check(run_learning)) {//解析python的返回值
+		int Index_i = 0, Index_k = 0, Index_m = 0, Index_n = 0;
+		int size_of_list = PyList_Size(run_learning);//读取list的尺寸
+		for (Index_i = 0;Index_i < size_of_list;Index_i++) {
+			//读取List中的PyArrayObject对象，这里需要进行强制转换。
+			PyArrayObject *ListItem = (PyArrayObject *)PyList_GetItem(run_learning, Index_i);
+			int Rows = ListItem->dimensions[0], columns = ListItem->dimensions[1];
+			for (Index_m = 0; Index_m < Rows; Index_m++) {
+
+				for (Index_n = 0; Index_n < columns; Index_n++) {
+
+					//cout << *(double *)(ListItem->data + Index_m * ListItem->strides[0] + Index_n * ListItem->strides[1]) << " ";//访问数据，Index_m 和 Index_n 分别是数组元素的坐标，乘上相应维度的步长，即可以访问数组元素
+				}
+				cout << endl;
+			}
+			
+		}
+
+
+	}
 	Py_Finalize();
 
 
