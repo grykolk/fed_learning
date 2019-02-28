@@ -1,9 +1,16 @@
+#ifdef _DEBUG
+#undef _DEBUG
+#include <Python.h>
+#define _DEBUG
+#else
+#include <Python.h>
+#endif
 #include <iostream>
 #include <iomanip>
 #include <vector>
 #include <string>
 #include <chrono>
-#include <random>
+#include <vector>
 #include <thread>
 #include <mutex>
 #include <memory>
@@ -11,13 +18,7 @@
 #include <site-packages/numpy/core/include/numpy/arrayobject.h>
 #include "seal/seal.h"
 
-#ifdef _DEBUG
-#undef _DEBUG
-#include <python.h>
-#define _DEBUG
-#else
-#include <python.h>
-#endif
+
 
 using namespace std;
 using namespace seal;
@@ -48,7 +49,9 @@ void main() {
 		PyEval_CallObject(pFunc, pArg);
 	}*/
 	PyObject * run_learning=PyEval_CallObject(pFunc,NULL);
+	cout << "已取得数组，正在解析返回值";
 	if (PyList_Check(run_learning)) {//解析python的返回值
+		vector<double> get_data;
 		int Index_i = 0, Index_k = 0, Index_m = 0, Index_n = 0;
 		int size_of_list = PyList_Size(run_learning);//读取list的尺寸
 		for (Index_i = 0;Index_i < size_of_list;Index_i++) {
@@ -59,12 +62,13 @@ void main() {
 
 				for (Index_n = 0; Index_n < columns; Index_n++) {
 
-					//cout << *(double *)(ListItem->data + Index_m * ListItem->strides[0] + Index_n * ListItem->strides[1]) << " ";//访问数据，Index_m 和 Index_n 分别是数组元素的坐标，乘上相应维度的步长，即可以访问数组元素
+					//get_data.push_back( *(double *)(ListItem->data + Index_m * ListItem->strides[0] + Index_n * ListItem->strides[1]));//访问数据，Index_m 和 Index_n 分别是数组元素的坐标，乘上相应维度的步长，即可以访问数组元素
 				}
 				cout << endl;
 			}
 			
 		}
+		cout << "解析完毕";
 
 
 	}
