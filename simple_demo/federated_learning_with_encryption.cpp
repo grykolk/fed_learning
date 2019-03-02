@@ -48,25 +48,72 @@ void main() {
 	if (pModule != NULL) {
 		PyEval_CallObject(pFunc, pArg);
 	}*/
-	PyObject * run_learning=PyEval_CallObject(pFunc,NULL);
+	PyObject * list1=PyEval_CallObject(pFunc,NULL);
 	cout << "已取得数组，正在解析返回值";
-	if (PyList_Check(run_learning)) {//解析python的返回值
+	if (PyList_Check(list1)) {//解析python的返回值
 		vector<double> get_data;
-		int Index_i = 0, Index_k = 0, Index_m = 0, Index_n = 0;
-		int size_of_list = PyList_Size(run_learning);//读取list的尺寸
-		for (Index_i = 0;Index_i < size_of_list;Index_i++) {
+		int Index_1 = 0, Index_2 = 0, Index_3 = 0;//第一层（权重，偏移量）。第二层（每个客户端的数据）。第三层（四个网络）
+		int size_of_list = PyList_Size(list1);//读取list的尺寸
+		for (Index_1 = 0;Index_1 < size_of_list;Index_1++) {//剥开第一层list
 			//读取List中的PyArrayObject对象，这里需要进行强制转换。
-			PyArrayObject *ListItem = (PyArrayObject *)PyList_GetItem(run_learning, Index_i);
-			int Rows = ListItem->dimensions[0], columns = ListItem->dimensions[1];
-			for (Index_m = 0; Index_m < Rows; Index_m++) {
+			//PyArrayObject *ListItem = (PyArrayObject *)PyList_GetItem(run_learning, Index_1);
+			PyObject *List2 = (PyObject *)PyList_GetItem(list1, Index_1);//剥开第二层list
+			for (Index_2 = 0;Index_2 < PyList_Size(List2);Index_2++) {
+				PyObject *List3 = (PyObject *)PyList_GetItem(List2, Index_2);//剥开第三层list.numpy数组的维度=第零层5，5，32，64第一层5，5，1，32第二层3136, 128第三层（128，10）
+				for (Index_3 = 0;Index_3 < PyList_Size(List3);Index_3++) {
+					PyArrayObject *data = (PyArrayObject *)PyList_GetItem(List3, Index_3);
+					switch (Index_3) {
+					case 0:
+						for (int i = 0;i < 5;i++) {
+							for (int j = 0;j < 5;j++) {
+								for (int m = 0;m < 32;m++) {
+									for (int n = 0;n < 64;n++) {
+										cout << *(double *)(data->data + i * data->strides[0] + j * data->strides[1]+m*data->strides[2]+n*data->strides[3]);
+									}
+								}
+							}
+						}
+						break;
+					case 1:
+						for (int i = 0;i < 5;i++) {
+							for (int j = 0;j < 5;j++) {
+								for (int m = 0;m < 1;m++) {
+									for (int n = 0;n < 32;n++) {
+										cout << *(double *)(data->data + i * data->strides[0] + j * data->strides[1] + m * data->strides[2] + n * data->strides[3]);
+									}
+								}
+							}
+						}
+						break;
+					case 2:
+						for (int i = 0;i < 3136;i++) {
+							for (int j = 0;j < 128;j++) {
+								cout << *(double *)(data->data + i * data->strides[0] + j * data->strides[1] );
+							}
+						}
+						
+						break;
+					case 3:
+						for (int i = 0;i < 128;i++) {
+							for (int j = 0;j < 10;j++) {
+								cout << *(double *)(data->data + i * data->strides[0] + j * data->strides[1]);
+							}
+						}
+						break;
 
-				for (Index_n = 0; Index_n < columns; Index_n++) {
 
-					//get_data.push_back( *(double *)(ListItem->data + Index_m * ListItem->strides[0] + Index_n * ListItem->strides[1]));//访问数据，Index_m 和 Index_n 分别是数组元素的坐标，乘上相应维度的步长，即可以访问数组元素
+					}
 				}
-				cout << endl;
+			//	int Rows = ListItem->dimensions[0], columns = ListItem->dimensions[1];
+			//	for (int Index_m = 0; Index_m < Rows; Index_m++) {
+
+			//		for (int Index_n = 0; Index_n < columns; Index_n++) {
+
+			//			//get_data.push_back( *(double *)(ListItem->data + Index_m * ListItem->strides[0] + Index_n * ListItem->strides[1]));//访问数据，Index_m 和 Index_n 分别是数组元素的坐标，乘上相应维度的步长，即可以访问数组元素
+			//		}
+			//		cout << endl;
+			//	}
 			}
-			
 		}
 		cout << "解析完毕";
 

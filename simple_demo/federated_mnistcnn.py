@@ -164,7 +164,7 @@ class federated_learning():
 
         end_time = time.time()
         print('Time: %.2fs' % (end_time - start_time))
-        return (clients_weights,clients_biases)
+        return [clients_weights,clients_biases]
     def start_demo (self):
         print("初始化tensorflow")
         learning_rate = self.init_lr
@@ -320,16 +320,7 @@ class federated_learning():
 
 federated=federated_learning()
 def main():
-    temp=federated.start()
-    sum_vector=np.zeros(0)
-    sumb_vector=np.zeros(0)
-    for i in range(0,100):
-        for j in range(0,4):
-            temp1=temp[0][i][j]
-            temp2=temp[1][i][j]
-            sum_vector=np.concatenate((sum_vector,temp1.flatten()))#45468800个值
-            sumb_vector=np.concatenate((sumb_vector,temp2.flatten()))#23400个值
-    return [sum_vector,sumb_vector]#4549220个值
+    return federated.start()#45468800个值23400个值#4549220个值
 
 if __name__ == "__main__":
     main()
