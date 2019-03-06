@@ -42,7 +42,7 @@ void main() {
 
 	// 获得TensorFlow函数指针
 	pFunc = PyObject_GetAttrString(pModule, "main");
-
+	//pFunc = PyObject_GetAttrString(pModule, "test");
 	// 调用TensorFlow函数
 	/*pArg = Py_BuildValue("(s)", "this is a call from c++");
 	if (pModule != NULL) {
@@ -54,21 +54,23 @@ void main() {
 		vector<double> get_data;
 		int Index_1 = 0, Index_2 = 0, Index_3 = 0;//第一层（权重，偏移量）。第二层（每个客户端的数据）。第三层（四个网络）
 		int size_of_list = PyList_Size(list1);//读取list的尺寸
-		for (Index_1 = 0;Index_1 < size_of_list;Index_1++) {//剥开第一层list
+		for (Index_1 = 0;Index_1 < size_of_list;Index_1++) {
+			if(Index_1==0){
+			//剥开第一层list
 			//读取List中的PyArrayObject对象，这里需要进行强制转换。
 			//PyArrayObject *ListItem = (PyArrayObject *)PyList_GetItem(run_learning, Index_1);
 			PyObject *List2 = (PyObject *)PyList_GetItem(list1, Index_1);//剥开第二层list
 			for (Index_2 = 0;Index_2 < PyList_Size(List2);Index_2++) {
-				PyObject *List3 = (PyObject *)PyList_GetItem(List2, Index_2);//剥开第三层list.numpy数组的维度=第零层5，5，32，64第一层5，5，1，32第二层3136, 128第三层（128，10）
+				PyObject *List3 = (PyObject *)PyList_GetItem(List2, Index_2);//剥开第三层list.numpy数组的维度=第零层5，5，1，32第一层5，5，32，64第二层3136, 128第三层（128，10）
 				for (Index_3 = 0;Index_3 < PyList_Size(List3);Index_3++) {
 					PyArrayObject *data = (PyArrayObject *)PyList_GetItem(List3, Index_3);
 					switch (Index_3) {
 					case 0:
 						for (int i = 0;i < 5;i++) {
 							for (int j = 0;j < 5;j++) {
-								for (int m = 0;m < 32;m++) {
-									for (int n = 0;n < 64;n++) {
-										cout << *(double *)(data->data + i * data->strides[0] + j * data->strides[1]+m*data->strides[2]+n*data->strides[3]);
+								for (int m = 0;m < 1;m++) {
+									for (int n = 0;n < 32;n++) {
+										cout << *(float *)(data->data + i * data->strides[0] + j * data->strides[1] + m * data->strides[2] + n * data->strides[3]) << endl;
 									}
 								}
 							}
@@ -77,9 +79,9 @@ void main() {
 					case 1:
 						for (int i = 0;i < 5;i++) {
 							for (int j = 0;j < 5;j++) {
-								for (int m = 0;m < 1;m++) {
-									for (int n = 0;n < 32;n++) {
-										cout << *(double *)(data->data + i * data->strides[0] + j * data->strides[1] + m * data->strides[2] + n * data->strides[3]);
+								for (int m = 0;m < 32;m++) {
+									for (int n = 0;n < 64;n++) {
+										cout << *(float *)(data->data + i * data->strides[0] + j * data->strides[1] + m * data->strides[2] + n * data->strides[3]);
 									}
 								}
 							}
@@ -88,15 +90,15 @@ void main() {
 					case 2:
 						for (int i = 0;i < 3136;i++) {
 							for (int j = 0;j < 128;j++) {
-								cout << *(double *)(data->data + i * data->strides[0] + j * data->strides[1] );
+								cout << *(float *)(data->data + i * data->strides[0] + j * data->strides[1]);
 							}
 						}
-						
+
 						break;
 					case 3:
 						for (int i = 0;i < 128;i++) {
 							for (int j = 0;j < 10;j++) {
-								cout << *(double *)(data->data + i * data->strides[0] + j * data->strides[1]);
+								cout << *(float *)(data->data + i * data->strides[0] + j * data->strides[1]);
 							}
 						}
 						break;
@@ -104,6 +106,19 @@ void main() {
 
 					}
 				}
+			}
+			if (Index_1 == 1) {
+				PyObject *List2 = (PyObject *)PyList_GetItem(list1, Index_1);//剥开第二层list#第二个数组[100,4,32]
+				for (Index_2 = 0;Index_2 < PyList_Size(List2);Index_2++) {
+					PyObject *List3 = (PyObject *)PyList_GetItem(List2, Index_2);
+					for (Index_3 = 0;Index_3 < PyList_Size(List3);Index_3++) {
+						PyArrayObject *data = (PyArrayObject *)PyList_GetItem(List3, Index_3);
+						for (int i = 0;i < 32;i++) {
+							cout << *(float *)(data->data + i * data->strides[0] );
+						}
+					}
+				}
+			}
 			//	int Rows = ListItem->dimensions[0], columns = ListItem->dimensions[1];
 			//	for (int Index_m = 0; Index_m < Rows; Index_m++) {
 
@@ -114,6 +129,7 @@ void main() {
 			//		cout << endl;
 			//	}
 			}
+
 		}
 		cout << "解析完毕";
 

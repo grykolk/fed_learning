@@ -319,9 +319,11 @@ class federated_learning():
 
 
 federated=federated_learning()
-def main():
-    return federated.start()#45468800个值23400个值#4549220个值
 
+def main():
+    #a=federated.start()#45468800个值23400个值#4549220个值#第二个数组[100,4,32]
+    return federated.start()#45468800个值23400个值#4549220个值
+    
 if __name__ == "__main__":
     main()
     
