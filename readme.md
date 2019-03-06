@@ -12,9 +12,9 @@ Encryption_library文件夹里是CKKS算法的加密库和LICENSE<br>
 |联邦学习最简单的demo for mnist|  done  | 
 |测试加密库对于大数组的性能| done   | 
 |调试最基本的C++调用python的方法|done   |    
-|C++与python之间参数的传递| working    |
-|用C++解析python的list+np多维数组| working   |
-|加密模块+计算模块| not yet      |
+|C++与python之间参数的传递| done    |
+|用C++解析python的list+np多维数组| done   |
+|加密模块+计算模块| working      |
 |把计算好的数据重构为list+np多维数组| not yet     |
 |把数据传回python继续进行学习|not yet      | 
 |测试这个demo的学习性能| not yet    |
