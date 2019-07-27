@@ -19,6 +19,6 @@ Encryption_library文件夹里是CKKS算法的加密库和LICENSE<br>
 |把数据传回python继续进行学习|done      | 
 |多层感知网络MLP+联邦加密学习|done      |
 |LeNet5联邦加密学习|done      |
-|FitNet4联邦加密学习|working      |
-|测试cnn+联邦加密学习的学习性能| not yet    |
+|FitNet4联邦加密学习|done       |
+|测试性能| working    |
 |把demo做成可以在多个电脑上实机运行的成品（有时间的话)|not yet |
