@@ -22,13 +22,13 @@ void main() {
 		run_Mnist_MLP(test_mode);
 		break;
 	case 2:
-		cout << "havent finsihed " << endl;
+		run_Cifar10_MLP(test_mode);
 		break;
 	case 3: 
 		run_LeNet_5_model(test_mode);
 		break;
 	case 4:
-		cout << "havent finsihed " << endl;
+		run_FitNet4_model(test_mode);
 		break;
 
 	}

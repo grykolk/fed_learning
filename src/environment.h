@@ -24,3 +24,5 @@
 #include "for_Mnist_MLP.h"
 #include "for_Lenet5.h"
 #include "client.h"
+#include "for_Cifar10_MLP.h"
+#include"for_fitnet4.h"

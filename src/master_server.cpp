@@ -24,24 +24,33 @@ using namespace std;
 		poly_modulus_degree = Poly_modulus_degree;
 		coeff_modulus = Coeff_modulus;
 	}
-	void master_server::aggregate_with_encryption(vector <Ciphertext> Weight,vector <Ciphertext> Biases,int size) {
+	void master_server::aggregate_with_encryption(vector <Ciphertext> Weight,vector <Ciphertext> Biases,int Wsize,int Bsize) {
 		weight.clear();
 		EncryptionParameters parms = EncryptionParameters(scheme_type::CKKS);
 		parms.set_poly_modulus_degree(poly_modulus_degree);
 		parms.set_coeff_modulus(DefaultParams::coeff_modulus_128(coeff_modulus));
 		auto context = SEALContext::Create(parms);
 		Evaluator evaluator(context);
-		for (int j = 0;j < size;j++) {
+		for (int j = 0;j < Wsize;j++) {
 			weight.push_back(Weight[j]);
 		}
 		for (int i = 1;i < client_count;i++) {
-			for (int j = 0;j <size;j++) {
-				evaluator.add_inplace(weight[j],Weight[i * size + j]);
+			for (int j = 0;j < Wsize;j++) {
+				evaluator.add_inplace(weight[j],Weight[i * Wsize + j]);
+			}
+			//evaluator.add_inplace(Biases[0], Biases[i]);
+		}
+		for (int j = 0;j < Bsize;j++) {
+			biases.push_back(Biases[j]);
+		}
+		for (int i = 1;i < client_count;i++) {
+			for (int j = 0;j < Bsize;j++) {
+				evaluator.add_inplace(biases[j], Biases[i * Bsize + j]);
 			}
 			//evaluator.add_inplace(Biases[0], Biases[i]);
 		}
 
-		evaluator.add_many(Biases, biases);
+		//evaluator.add_many(Biases, biases);
 	
 	}
 	void master_server::aggregate_without_encryption(vector<vector<float>> Weight,vector<vector<float>> Biases) {
@@ -71,7 +80,7 @@ using namespace std;
 	vector<Ciphertext> master_server::get_encryption_weight() {
 		return weight;
 	}
-	Ciphertext master_server::get_encryption_biases() {
+	vector<Ciphertext> master_server::get_encryption_biases() {
 		return biases;
 	}
 //};

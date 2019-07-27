@@ -270,9 +270,9 @@ Mnist_MLP::Mnist_MLP(){}
 				}
 				//聚合
 				cout << "聚合" << endl;
-				master->aggregate_with_encryption(Cweight, Cbiases, 156);
+				master->aggregate_with_encryption(Cweight, Cbiases, 156,1);
 				Cweight.clear();
-				Ciphertext C_biases = master->get_encryption_biases();
+				Cbiases = master->get_encryption_biases();
 				Cweight = master->get_encryption_weight();
 				//解密
 				cout << "解密" << endl;
@@ -284,7 +284,7 @@ Mnist_MLP::Mnist_MLP(){}
 					Weight.insert(Weight.end(), temp_vector.begin(), temp_vector.end());
 
 				}
-				decryptor.decrypt(C_biases, Ptemp);
+				decryptor.decrypt(Cbiases[0], Ptemp);
 				encoder.decode(Ptemp, Biases);
 				updated_Weight = vector<float>(Weight.begin(), Weight.end());
 				updated_Biases = vector<float>(Biases.begin(), Biases.end());
@@ -319,9 +319,9 @@ Mnist_MLP::Mnist_MLP(){}
 				}
 				//聚合
 				cout << "聚合" << endl;
-				master->aggregate_with_encryption(Cweight, Cbiases, 156);
+				master->aggregate_with_encryption(Cweight, Cbiases, 156,1);
 				Cweight.clear();
-				Ciphertext C_biases = master->get_encryption_biases();
+				Cbiases = master->get_encryption_biases();
 				Cweight = master->get_encryption_weight();
 				//解密
 				cout << "解密" << endl;
@@ -333,7 +333,7 @@ Mnist_MLP::Mnist_MLP(){}
 					Weight.insert(Weight.end(), temp_vector.begin(), temp_vector.end());
 
 				}
-				decryptor.decrypt(C_biases, Ptemp);
+				decryptor.decrypt(Cbiases[0], Ptemp);
 				encoder.decode(Ptemp, Biases);
 				updated_Weight = vector<float>(Weight.begin(), Weight.end());
 				updated_Biases = vector<float>(Biases.begin(), Biases.end());
